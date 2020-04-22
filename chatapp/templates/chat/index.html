@@ -1,0 +1,21 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Chat App</title>
+        <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    </head>
+    <body>
+        <div class="centered-form">
+            <div class="centered-form-box">
+                <h1>Join</h1>
+                <form>
+                    <label for="room">Room</label>
+                    <input type="text" name="room" placeholder="Room" required autocomplete="off">
+                    <button>Join</button>
+                </form>
+            </div>
+        </div>
+    </body>
+</html>
