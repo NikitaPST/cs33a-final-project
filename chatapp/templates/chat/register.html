@@ -5,19 +5,24 @@
     <head>
         <title>Chat App</title>
         <link rel="stylesheet" href="{% static 'css/style.css' %}">
+        <script src="{% static 'script/register.js' %}"></script>
     </head>
     <body>
         <div class="centered-form">
             <div class="centered-form-box">
                 <h1>Register</h1>
-                <form>
+                {% if message %}
+                <div class="alert error">{{ message }}</div>
+                {% endif %}
+                <form method="POST">
+                    {% csrf_token %}
                     <label for="username">User</label>
-                    <input type="text" name="username" placeholder="User" required autocomplete="off">
+                    <input id="tbUsername" type="text" name="username" placeholder="User" required autocomplete="off">
                     <label for="password">Password</label>
-                    <input type="password" name="password" placeholder="Password" required>
+                    <input id="tbPassword" type="password" name="password" placeholder="Password" required>
                     <label for="confirmation">Confirm Password</label>
-                    <input type="password" name="confirmation" placeholder="Confirm Password" required>
-                    <button>Register</button>
+                    <input id="tbConfirmation" type="password" name="confirmation" placeholder="Confirm Password" required>
+                    <button id="btnRegister" type="submit" disabled>Register</button>
                 </form>
                 <div>
                     <small>
