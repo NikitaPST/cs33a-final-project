@@ -91,3 +91,73 @@ a:hover {
 .alert.error {
     color: #c75e65;
 }
+
+.chat-container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+.chat-topbar {
+    display: flex;
+    flex-direction: row-reverse;
+    height: 50px;
+    color: white;
+    background: #333744;
+}
+
+.chat-topbar div {
+    line-height: 50px;
+    padding: 0 15px;
+}
+
+.chat {
+    display: flex;
+    flex-grow: 1;
+}
+
+.chat-sidebar {
+    height: 100%;
+    color: white;
+    background: #333744;
+    width: 255px;
+    overflow-y: scroll;
+}
+
+.chat-main {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    max-height: 100%;
+}
+
+.chat-messages {
+    flex-grow: 1;
+    padding: 24px 24px 0 24px;
+    overflow-y: scroll;
+}
+
+.compose {
+    display: flex;
+    flex-shrink: 0;
+    margin-top: 16px;
+    padding: 24px;
+}
+
+.compose div {
+    display: flex;
+    flex-grow: 1;
+    margin-right: 16px;
+}
+
+.compose input {
+    border: 1px solid #eee;
+    width: 100%;
+    padding: 12px;
+    margin: 0 16px 0 0;
+    flex-grow: 1;
+}
+
+.compose button {
+    font-size: 14px;
+}

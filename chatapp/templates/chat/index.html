@@ -10,10 +10,11 @@
         <div class="centered-form">
             <div class="centered-form-box">
                 <h1>Join</h1>
-                <form>
+                <form method="POST">
+                    {% csrf_token %}
                     <label for="room">Room</label>
                     <input type="text" name="room" placeholder="Room" required autocomplete="off">
-                    <button>Join</button>
+                    <button type="submit">Join</button>
                 </form>
             </div>
         </div>

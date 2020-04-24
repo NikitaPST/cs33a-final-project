@@ -31,6 +31,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'channels',
     'chatapp',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -68,7 +69,12 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'final.wsgi.application'
+ASGI_APPLICATION = 'final.routing.application'
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels.layers.InMemoryChannelLayer"
+    }
+}
 
 
 # Database

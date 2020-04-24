@@ -1,13 +1,26 @@
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError
 from django.shortcuts import HttpResponseRedirect, render
 from django.urls import reverse
 
 from .models import User
 
+@login_required
+def room(request, room_name):
+    return render(request, "chat/room.html", {
+        "room_name": room_name
+    })
+
 def index(request):
     if not request.user.is_authenticated:
         return HttpResponseRedirect(reverse("login"))
+
+    if request.method == "POST":
+        room_name = request.POST["room"]
+        return HttpResponseRedirect(reverse("room", kwargs={
+            "room_name": room_name
+        }))
     return render(request, "chat/index.html")
 
 def login_view(request):
@@ -25,6 +38,11 @@ def login_view(request):
             })
     else:
         return render(request, "chat/login.html")
+
+@login_required
+def logout_view(request):
+    logout(request)
+    return HttpResponseRedirect(reverse("login"))
 
 def register(request):
     if request.method == "POST":

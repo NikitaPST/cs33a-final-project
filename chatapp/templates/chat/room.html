@@ -1,0 +1,38 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Chat App</title>
+        <link rel="stylesheet" href="{% static 'css/style.css' %}">
+        <script src="{% static 'script/room.js' %}"></script>
+    </head>
+    <body>
+        <input type="hidden" id="room" value="{{ room_name }}">
+        <div class="chat-container">
+            <div class="chat-topbar">
+                <div>
+                    <a href="{% url 'logout' %}">Log out</a>
+                </div>
+                <div>
+                    <a href="{% url 'index' %}">Change room</a>
+                </div>
+                <div>
+                    <strong>{{ user.username }}</strong>
+                </div>
+            </div>
+            <div class="chat">
+                <div id="sidebar" class="chat-sidebar"></div>
+                <div class="chat-main">
+                    <div id="messages" class="chat-messages"></div>
+                    <div class="compose">
+                        <div id="message-form">
+                            <input type="text" name="message" placeholder="Message" required autocomplete="off">
+                            <button disabled>Send</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>
