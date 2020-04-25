@@ -161,3 +161,18 @@ a:hover {
 .compose button {
     font-size: 14px;
 }
+
+.message {
+    margin-bottom: 16px;
+}
+
+.message-name {
+    font-weight: 600;
+    font-size: 14px;
+    margin-right: 8px;
+}
+
+.message-meta {
+    color: #777;
+    font-size: 14px;
+}

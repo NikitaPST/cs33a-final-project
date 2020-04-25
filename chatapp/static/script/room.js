@@ -7,6 +7,22 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     chatSocket.onopen = function () {
-        console.log('connected to server')
+        chatSocket.onmessage = function (e) {
+            const message = JSON.parse(e.data);
+            if (message.type === 'message') {
+                handleMessage(message.data);
+            }
+        }
     }
 });
+
+function handleMessage(msg) {
+    const messageTemplate = document.querySelector('#message-template').innerHTML;
+    const html = Mustache.render(messageTemplate, {
+        username: msg.username,
+        message: msg.text,
+        createdAt: moment(msg.createdAt).format('h:mm a')
+    });
+    document.querySelector('#messages').insertAdjacentHTML('beforeend', html);
+    // autoscroll
+}

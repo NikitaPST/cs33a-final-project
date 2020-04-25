@@ -1,6 +1,7 @@
 import datetime
 import json
 from channels.generic.websocket import AsyncWebsocketConsumer
+from django.core.serializers.json import DjangoJSONEncoder
 
 class ChatConsumer(AsyncWebsocketConsumer):
     async def connect(self):
@@ -12,8 +13,18 @@ class ChatConsumer(AsyncWebsocketConsumer):
             self.channel_name
         )
         await self.accept()
-        print(self.generateMessage("Welcome!", "Admin"))
 
+        await self.chat_message({
+            "type": "chat_message",
+            "message": self.generateMessage("Welcome!", "Admin")
+        })
+        await self.channel_layer.group_send(
+            self.room_group_name, {
+                "type": "chat_message",
+                "except": self.channel_name,
+                "message": self.generateMessage(f"{self.user} has joined!", "Admin")
+            }
+        )
 
     async def disconnect(self, close_code):
         await self.channel_layer.group_discard(
@@ -32,3 +43,13 @@ class ChatConsumer(AsyncWebsocketConsumer):
             "text": text,
             "createdAt": datetime.datetime.now()
         }
+
+    async def chat_message(self, event):
+        msg = event["message"]
+        if ("except" in event and event["except"] == self.channel_name):
+            return
+            
+        await self.send(text_data=json.dumps({
+            "type": "message",
+            "data": msg
+        }, sort_keys=True, indent=1, cls=DjangoJSONEncoder))
