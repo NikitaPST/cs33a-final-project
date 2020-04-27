@@ -53,10 +53,36 @@ class ChatConsumer(AsyncWebsocketConsumer):
             self.channel_name
         )
 
-    def receive(self, text_data):
+        await self.channel_layer.group_send(
+            self.room_group_name, {
+                "type": "chat_message",
+                "message": self.generate_message(
+                    f"{self.user} has left!", "Admin"
+                )
+            }
+        )
+        await self.channel_layer.group_send(
+            self.room_group_name, {
+                "type": "room_data",
+                "room": self.room_name,
+                "users": ChatConsumer.room_manager.get_users_in_room(
+                    self.room_name
+                )
+            }
+        )
+
+    async def receive(self, text_data):
         json_data = json.loads(text_data)
         message = json_data["message"]
-        print(f"Message: {message}")
+        await self.channel_layer.group_send(
+            self.room_group_name, {
+                "type": "chat_message",
+                "message": self.generate_message(
+                    message, str(self.user)
+                )
+            }
+        )
+        
 
     def generate_message(self, text, username):
         return {

@@ -1,6 +1,8 @@
+var chatSocket = null;
+
 document.addEventListener('DOMContentLoaded', function () {
     const roomName = document.querySelector('#room').value;
-    const chatSocket = new WebSocket(`ws://${window.location.host}/ws/chat/${roomName}/`);
+    chatSocket = new WebSocket(`ws://${window.location.host}/ws/chat/${roomName}/`);
 
     chatSocket.onerror = function (e) {
         console.error('connection error');
@@ -16,6 +18,9 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         }
     }
+
+    document.querySelector('#tbMessage').addEventListener('keyup', handleMessageChange);
+    document.querySelector('#btnSend').addEventListener('click', handleSend);
 });
 
 function handleMessage(msg) {
@@ -26,7 +31,7 @@ function handleMessage(msg) {
         createdAt: moment(msg.createdAt).format('h:mm a')
     });
     document.querySelector('#messages').insertAdjacentHTML('beforeend', html);
-    // autoscroll
+    autoscroll();
 }
 
 function handleRoomData(data) {
@@ -36,4 +41,45 @@ function handleRoomData(data) {
         users: data.users
     });
     document.querySelector('#sidebar').innerHTML = html;
+}
+
+function handleMessageChange(event) {
+    const msg = document.querySelector('#tbMessage').value;
+    document.querySelector('#btnSend').disabled = !msg;
+
+    if (event.keyCode === 13 && msg) {
+        handleSend();
+    }
+}
+
+function handleSend() {
+    const messageInput = document.querySelector('#tbMessage');
+    const sendButton = document.querySelector('#btnSend');
+
+    const msg = messageInput.value;
+    chatSocket.send(JSON.stringify({
+        type: 'send_message',
+        message: msg
+    }));
+
+    messageInput.value = '';
+    sendButton.disabled = true;
+    messageInput.focus();
+}
+
+function autoscroll() {
+    const messages = document.querySelector('#messages')
+    const newMessage = messages.lastElementChild;
+
+    const newMessageStyles = getComputedStyle(newMessage);
+    const newMessageMargin = parseInt(newMessageStyles.marginBottom);
+    const newMessageHeight = newMessage.offsetHeight + newMessageMargin;
+
+    const visibleHeight = messages.offsetHeight;
+    const containerHeight = messages.scrollHeight;
+    const scrollOffset = messages.scrollTop + visibleHeight;
+
+    if (containerHeight - newMessageHeight <= scrollOffset) {
+        messages.scrollTop = messages.scrollHeight;
+    }
 }

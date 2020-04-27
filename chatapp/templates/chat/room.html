@@ -24,13 +24,17 @@
                 </div>
             </div>
             <div class="chat">
-                <div id="sidebar" class="chat-sidebar"></div>
-                <div class="chat-main">
-                    <div id="messages" class="chat-messages"></div>
-                    <div class="compose">
-                        <div id="message-form">
-                            <input type="text" name="message" placeholder="Message" required autocomplete="off">
-                            <button disabled>Send</button>
+                <div class="container">
+                    <div id="sidebar" class="chat-sidebar"></div>
+                </div>
+                <div class="container grow">
+                    <div class="chat-main">
+                        <div id="messages" class="chat-messages"></div>
+                        <div class="compose">
+                            <div id="message-form">
+                                <input type="text" id="tbMessage" name="message" placeholder="Message" required autocomplete="off">
+                                <button id="btnSend" disabled>Send</button>
+                            </div>
                         </div>
                     </div>
                 </div>
