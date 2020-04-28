@@ -168,6 +168,10 @@ a:hover {
     margin-bottom: 16px;
 }
 
+.message.admin {
+    color: #6b47b8;
+}
+
 .message-name {
     font-weight: 600;
     font-size: 14px;
@@ -177,6 +181,10 @@ a:hover {
 .message-meta {
     color: #777;
     font-size: 14px;
+}
+
+.message-content {
+    white-space: pre-line;
 }
 
 .room-title {

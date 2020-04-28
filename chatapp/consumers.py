@@ -1,4 +1,5 @@
 import datetime
+import http.client
 import json
 from channels.generic.websocket import AsyncWebsocketConsumer
 from django.core.serializers.json import DjangoJSONEncoder
@@ -25,7 +26,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
         await self.chat_message({
             "type": "chat_message",
-            "message": self.generate_message("Welcome!", "Admin")
+            "message": self.generate_message("Welcome! (type !help for additional commands)", "Admin")
         })
         await self.channel_layer.group_send(
             self.room_group_name, {
@@ -74,14 +75,40 @@ class ChatConsumer(AsyncWebsocketConsumer):
     async def receive(self, text_data):
         json_data = json.loads(text_data)
         message = json_data["message"]
-        await self.channel_layer.group_send(
-            self.room_group_name, {
-                "type": "chat_message",
-                "message": self.generate_message(
-                    message, str(self.user)
-                )
-            }
-        )
+        params = message.split()
+        if params[0] == "!help":
+            message = "Additional commands:\n" \
+                + "!location - returns your location"
+            await self.chat_message({
+                    "type": "chat_message",
+                    "message": self.generate_message(
+                        message, "Admin"
+                    )
+                }
+            )
+        elif params[0] == "!location":
+            latitude = params[1]
+            longitude = params[2]
+            location = self.get_location(latitude, longitude)
+            message = f"Your current location: {location}" \
+                if location is not None \
+                else "Can't determine your location"
+            await self.chat_message({
+                    "type": "chat_message",
+                    "message": self.generate_message(
+                        message, "Admin"
+                    )
+                }
+            )
+        else:
+            await self.channel_layer.group_send(
+                self.room_group_name, {
+                    "type": "chat_message",
+                    "message": self.generate_message(
+                        message, str(self.user)
+                    )
+                }
+            )
         
 
     def generate_message(self, text, username):
@@ -110,3 +137,19 @@ class ChatConsumer(AsyncWebsocketConsumer):
             "type": "roomData",
             "data": data
         }))
+
+    def get_location(self, latitude, longitude):
+        location = None
+        host = "us1.locationiq.com"
+        api_key = "pk.2cbf57d26ecd52c509e8895aefd8e4f8"
+        url = f"/v1/reverse.php?key={api_key}" \
+            + f"&lat={latitude}&lon={longitude}&format=json"
+        conn = http.client.HTTPSConnection(host)
+        conn.request("GET", url)
+        resp = conn.getresponse()
+        if (resp.status == 200):
+            data = resp.read()
+            json_data = json.loads(data.decode("utf-8"))
+            location = json_data["display_name"]
+        conn.close()
+        return location

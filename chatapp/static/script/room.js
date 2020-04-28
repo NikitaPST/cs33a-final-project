@@ -25,11 +25,14 @@ document.addEventListener('DOMContentLoaded', function () {
 
 function handleMessage(msg) {
     const messageTemplate = document.querySelector('#message-template').innerHTML;
-    const html = Mustache.render(messageTemplate, {
+    let html = Mustache.render(messageTemplate, {
         username: msg.username,
         message: msg.text,
         createdAt: moment(msg.createdAt).format('h:mm a')
     });
+    if (msg.username === 'Admin') {
+        html = html.replace('class="message"', 'class="message admin"');
+    }
     document.querySelector('#messages').insertAdjacentHTML('beforeend', html);
     autoscroll();
 }
@@ -56,11 +59,25 @@ function handleSend() {
     const messageInput = document.querySelector('#tbMessage');
     const sendButton = document.querySelector('#btnSend');
 
-    const msg = messageInput.value;
-    chatSocket.send(JSON.stringify({
-        type: 'send_message',
-        message: msg
-    }));
+    let msg = messageInput.value;
+    if (msg === '!location') {
+        if (!navigator.geolocation) {
+            return alert('Geolocation is not supported by your browser.');
+        }
+
+        navigator.geolocation.getCurrentPosition((position) => {
+            msg = `${msg} ${position.coords.latitude} ${position.coords.longitude}`;
+            chatSocket.send(JSON.stringify({
+                type: 'send_message',
+                message: msg
+            }));
+        });
+    } else {
+        chatSocket.send(JSON.stringify({
+            type: 'send_message',
+            message: msg
+        }));
+    }
 
     messageInput.value = '';
     sendButton.disabled = true;
