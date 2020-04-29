@@ -60,7 +60,7 @@ function handleSend() {
     const sendButton = document.querySelector('#btnSend');
 
     let msg = messageInput.value;
-    if (msg === '!location') {
+    if (msg === '!location' || msg === '!weather') {
         if (!navigator.geolocation) {
             return alert('Geolocation is not supported by your browser.');
         }

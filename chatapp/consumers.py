@@ -11,7 +11,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
     async def connect(self):
         self.room_name = self.scope["url_route"]["kwargs"]["room_name"]
-        self.room_group_name = f"chat_{self.room_name}"
+        self.room_group_name = f"chat_{self.room_name.replace(' ', '_')}"
         self.user = self.scope["user"]
         ChatConsumer.room_manager.add_user(
             self.channel_name,
@@ -78,7 +78,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
         params = message.split()
         if params[0] == "!help":
             message = "Additional commands:\n" \
-                + "!location - returns your location"
+                + "!location - returns your location\n" \
+                + "!weather - returns current weather"
             await self.chat_message({
                     "type": "chat_message",
                     "message": self.generate_message(
@@ -100,6 +101,22 @@ class ChatConsumer(AsyncWebsocketConsumer):
                     )
                 }
             )
+        elif params[0] == "!weather":
+            latitude = params[1]
+            longitude = params[2]
+            forecast = self.get_forecast(latitude, longitude)
+            message = f"Current weather at {forecast['place']}:\n" \
+                + f"Temperature: {forecast['temp']} \u2109\n" \
+                + forecast["description"].title() + "\n" \
+                + f"Wind speed: {forecast['wind_speed']} miles/hour" \
+                if forecast is not None \
+                else "Can't determine weather in your region"
+            await self.chat_message({
+                "type": "chat_message",
+                "message": self.generate_message(
+                    message, "Admin"
+                )
+            })
         else:
             await self.channel_layer.group_send(
                 self.room_group_name, {
@@ -147,9 +164,30 @@ class ChatConsumer(AsyncWebsocketConsumer):
         conn = http.client.HTTPSConnection(host)
         conn.request("GET", url)
         resp = conn.getresponse()
-        if (resp.status == 200):
+        if resp.status == 200:
             data = resp.read()
             json_data = json.loads(data.decode("utf-8"))
             location = json_data["display_name"]
         conn.close()
         return location
+
+    def get_forecast(self, latitude, longitude):
+        forecast = None
+        host = "api.openweathermap.org"
+        api_key = "bef8f34daa67541b953d6ec4d58a0e62"
+        url = "/data/2.5/weather" \
+            f"?lat={latitude}&lon={longitude}&appid={api_key}&units=imperial"
+        conn = http.client.HTTPConnection(host)
+        conn.request("GET", url)
+        resp = conn.getresponse()
+        if resp.status == 200:
+            data = resp.read()
+            json_data = json.loads(data.decode("utf-8"))
+            forecast = {
+                "temp": json_data["main"]["temp"],
+                "place": json_data["name"],
+                "description": json_data["weather"][0]["description"],
+                "wind_speed": json_data["wind"]["speed"]
+            }
+        conn.close()
+        return forecast
