@@ -79,7 +79,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
         if params[0] == "!help":
             message = "Additional commands:\n" \
                 + "!location - returns your location\n" \
-                + "!weather - returns current weather"
+                + "!weather - returns current weather\n" \
+                + "!image [url] - post image to chat"
             await self.chat_message({
                     "type": "chat_message",
                     "message": self.generate_message(
@@ -117,6 +118,16 @@ class ChatConsumer(AsyncWebsocketConsumer):
                     message, "Admin"
                 )
             })
+        elif params[0] == "!image":
+            url = params[1]
+            await self.channel_layer.group_send(
+                self.room_group_name, {
+                    "type": "chat_image",
+                    "message": self.generate_image(
+                        url, str(self.user)
+                    )
+                }
+            )
         else:
             await self.channel_layer.group_send(
                 self.room_group_name, {
@@ -135,6 +146,13 @@ class ChatConsumer(AsyncWebsocketConsumer):
             "createdAt": datetime.datetime.now()
         }
 
+    def generate_image(self, image, username):
+        return {
+            "username": username,
+            "image": image,
+            "createdAt": datetime.datetime.now()
+        }
+
     async def chat_message(self, event):
         msg = event["message"]
         if ("except" in event and event["except"] == self.channel_name):
@@ -142,6 +160,14 @@ class ChatConsumer(AsyncWebsocketConsumer):
             
         await self.send(text_data=json.dumps({
             "type": "message",
+            "data": msg
+        }, sort_keys=True, indent=1, cls=DjangoJSONEncoder))
+
+    async def chat_image(self, event):
+        msg = event["message"]
+
+        await self.send(text_data=json.dumps({
+            "type": "image",
             "data": msg
         }, sort_keys=True, indent=1, cls=DjangoJSONEncoder))
 

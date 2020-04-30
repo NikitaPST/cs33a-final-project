@@ -13,6 +13,8 @@ document.addEventListener('DOMContentLoaded', function () {
             const message = JSON.parse(e.data);
             if (message.type === 'message') {
                 handleMessage(message.data);
+            } else if (message.type === 'image') {
+                handleImage(message.data);
             } else if (message.type === 'roomData') {
                 handleRoomData(message.data);
             }
@@ -33,6 +35,18 @@ function handleMessage(msg) {
     if (msg.username === 'Admin') {
         html = html.replace('class="message"', 'class="message admin"');
     }
+    document.querySelector('#messages').insertAdjacentHTML('beforeend', html);
+    autoscroll();
+}
+
+function handleImage(msg) {
+    const messageTemplate = document.querySelector('#image-template').innerHTML;
+    const html = Mustache.render(messageTemplate, {
+        username: msg.username,
+        message: msg.image,
+        createdAt: moment(msg.createdAt).format('h:mm a')
+    });
+
     document.querySelector('#messages').insertAdjacentHTML('beforeend', html);
     autoscroll();
 }

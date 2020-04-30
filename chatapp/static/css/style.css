@@ -187,6 +187,14 @@ a:hover {
     white-space: pre-line;
 }
 
+.message-image {
+    width: 250px;
+    height: 250px;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
 .room-title {
     font-weight: 400;
     font-size: 22px;
