@@ -2,7 +2,7 @@ var chatSocket = null;
 
 document.addEventListener('DOMContentLoaded', function () {
     const roomName = document.querySelector('#room').value;
-    chatSocket = new WebSocket(`ws://${window.location.host}/ws/chat/${roomName}/`);
+    chatSocket = new WebSocket(`wss://${window.location.host}/ws/chat/${roomName}/`);
 
     chatSocket.onerror = function (e) {
         console.error('connection error');
