@@ -2,4 +2,4 @@
 # $ conda create --name <env> --file <this file>
 # platform: win-64
 channels==2.4.0
-django==2.2.5
+django==2.2.10
