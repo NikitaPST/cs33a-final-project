@@ -3,7 +3,9 @@
 Simple chat application. My final project for CS33a class. It incorportes usage of django channels to access websockets. It also use several public API.
 
 *Class: CSCI E-33a "Web Programming with Python and JavaScript"*
+
 *Instructor: Brian Yu*
+
 *TA: Barbara Karakyriakou*
 
 ![Screenshot](/screen.png "Screenshot")
