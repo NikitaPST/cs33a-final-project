@@ -1,5 +1,5 @@
 # This file may be used to create an environment using:
 # $ conda create --name <env> --file <this file>
 # platform: win-64
-channels=2.4.0=pypi_0
-django=2.2.5=py37_1
+channels==2.4.0
+django==2.2.5
